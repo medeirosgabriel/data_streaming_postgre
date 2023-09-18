@@ -1,5 +1,6 @@
 package com.medeirosgabriel.job.task;
 
+import com.medeirosgabriel.job.enums.OrderStatus;
 import com.medeirosgabriel.job.model.Order_;
 import com.medeirosgabriel.job.repository.OrderRepository;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -22,8 +24,9 @@ public class OrderTask {
 
     // 5000 -> 5 seconds
     @Scheduled(fixedRate = 1000)
+    @Transactional
     public void reportCurrentTime() throws InterruptedException {
-        List<Order_> orders = this.orderRepository.findAll();
+        List<Order_> orders = this.orderRepository.findByOrderStatus(OrderStatus.PENDING);
         System.out.println(orders.size());
         for (Order_ order: orders) {
             int randomInt = this.randomNumber(1, 10);
