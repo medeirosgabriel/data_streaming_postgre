@@ -4,7 +4,7 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn install -DskipTests
 FROM openjdk:17-jdk-slim
-COPY --from=build /app/target/rpg-0.0.1-SNAPSHOT.jar /app/rpg-0.0.1-SNAPSHOT.jar
+COPY --from=build /app/target/orderservice-0.0.1-SNAPSHOT.jar /app/orderservice-0.0.1-SNAPSHOT.jar
 
 # Define as variáveis de ambiente
 
@@ -13,4 +13,4 @@ ENV DB_PORT=5432
 ENV DB_NAME=dockerdb
 ENV DB_USERNAME=dockeruser
 ENV DB_PASSWORD=dockerpassword
-CMD ["java", "-jar", "/app/rpg-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "/app/orderservice-0.0.1-SNAPSHOT.jar"]

@@ -20,21 +20,21 @@ public class OrderTask {
     @Autowired
     private OrderRepository orderRepository;
     private final Logger log = LoggerFactory.getLogger(OrderTask.class);
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     // 5000 -> 5 seconds
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 10000)
     @Transactional
     public void reportCurrentTime() throws InterruptedException {
         List<Order_> orders = this.orderRepository.findByOrderStatus(OrderStatus.PENDING);
-        System.out.println(orders.size());
         for (Order_ order: orders) {
-            int randomInt = this.randomNumber(1, 10);
-            int sleepTime = randomInt * 1000;
-            System.out.println(sleepTime);
+            //int randomInt = this.randomNumber(1, 10);
+            //int sleepTime = randomInt * 1000;
+            int sleepTime = 5 * 1000;
             Thread.sleep(sleepTime);
+            log.info(String.format("Order %d COMPLETED", order.getId()));
+            order.setOrderStatus(OrderStatus.COMPLETED);
+            this.orderRepository.save(order);
         }
-        //log.info("The time is now {}", dateFormat.format(new Date()));
     }
 
     private int randomNumber(int min, int max) {

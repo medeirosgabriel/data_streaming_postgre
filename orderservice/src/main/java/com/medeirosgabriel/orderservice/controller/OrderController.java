@@ -1,11 +1,9 @@
 package com.medeirosgabriel.orderservice.controller;
 
-import com.medeirosgabriel.orderservice.dto.ListOrdersDTO;
 import com.medeirosgabriel.orderservice.enums.OrderStatus;
 import com.medeirosgabriel.orderservice.model.Order_;
 import com.medeirosgabriel.orderservice.repository.OrderRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
