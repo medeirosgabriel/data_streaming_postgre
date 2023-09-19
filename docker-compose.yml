@@ -28,7 +28,7 @@ services:
   job:
     build: ./job
     ports:
-      - "8081:8081"
+      - "8085-9000:80"
     depends_on:
       - postgres
     environment:
@@ -37,6 +37,9 @@ services:
       DB_NAME: dockerdb
       DB_USERNAME: dockeruser
       DB_PASSWORD: dockerpassword
+    deploy:
+      mode: replicated
+      replicas: 2
 
 volumes:
   postgres-data:
