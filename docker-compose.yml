@@ -1,5 +1,9 @@
 version: '3.3'
 
+networks:
+  monitor-net:
+    driver: bridge
+
 services:
   postgres:
     image: postgres:13-alpine
@@ -8,14 +12,16 @@ services:
       POSTGRES_PASSWORD: dockerpassword
       POSTGRES_DB: dockerdb
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - monitor-net
 
   app:
     build: ./orderservice
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       - postgres
     environment:
@@ -24,6 +30,8 @@ services:
       DB_NAME: dockerdb
       DB_USERNAME: dockeruser
       DB_PASSWORD: dockerpassword
+    networks:
+      - monitor-net
 
   job:
     build: ./job
@@ -33,13 +41,49 @@ services:
       - postgres
     environment:
       DB_HOST: postgres
-      DB_PORT: 5432
+      DB_PORT: 5433
       DB_NAME: dockerdb
       DB_USERNAME: dockeruser
       DB_PASSWORD: dockerpassword
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 0
+    networks:
+      - monitor-net
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+    links:
+      - cadvisor:cadvisor
+    depends_on:
+      - cadvisor
+    networks:
+      - monitor-net
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+    command:
+      - '-port=9091'
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - 9091:9091
+    deploy:
+      mode: global
+    networks:
+      - monitor-net
 
 volumes:
   postgres-data:
