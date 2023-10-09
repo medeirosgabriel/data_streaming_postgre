@@ -40,12 +40,12 @@ public class OrderTask {
 //            Thread.sleep(sleepTime);
             log.info(String.format("Order %d COMPLETED", order.getId()));
 
+            order.setOrderStatus(OrderStatus.COMPLETED);
+            this.orderRepository.save(order);
+
             notifierService.notifyOrderCreated(order);
 
             sendMessageService.sendOrderUpdate(order);
-
-            order.setOrderStatus(OrderStatus.COMPLETED);
-            this.orderRepository.save(order);
         }
     }
 
