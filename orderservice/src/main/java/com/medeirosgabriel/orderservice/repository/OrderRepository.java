@@ -16,7 +16,7 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order_, Long> {
 
     String SKIP_LOCKED = "-2";
-    @QueryHints(@QueryHint(name = AvailableSettings.JPA_LOCK_TIMEOUT, value = SKIP_LOCKED))
+    @QueryHints(@QueryHint(name = AvailableSettings.JAKARTA_LOCK_TIMEOUT, value = SKIP_LOCKED))
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Order_> findByOrderStatus(OrderStatus orderStatus);
 
