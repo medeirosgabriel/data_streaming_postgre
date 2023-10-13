@@ -1,6 +1,7 @@
 package com.medeirosgabriel.orderservice.task;
 
 import com.medeirosgabriel.orderservice.enums.OrderStatus;
+import com.medeirosgabriel.orderservice.kafka.SendMessageService;
 import com.medeirosgabriel.orderservice.postgres_async.NotifierService;
 import com.medeirosgabriel.orderservice.model.Order_;
 import com.medeirosgabriel.orderservice.repository.OrderRepository;
@@ -21,6 +22,10 @@ public class OrderTask {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private SendMessageService sendMessageService;
+
     private final Logger log = LoggerFactory.getLogger(OrderTask.class);
 
     // 5000 -> 5 seconds
@@ -35,10 +40,12 @@ public class OrderTask {
 //            Thread.sleep(sleepTime);
             log.info(String.format("Order %d COMPLETED", order.getId()));
 
-            notifierService.notifyOrderCreated(order);
-
             order.setOrderStatus(OrderStatus.COMPLETED);
             this.orderRepository.save(order);
+
+            notifierService.notifyOrderCreated(order);
+
+            sendMessageService.sendOrderUpdate(order);
         }
     }
 
