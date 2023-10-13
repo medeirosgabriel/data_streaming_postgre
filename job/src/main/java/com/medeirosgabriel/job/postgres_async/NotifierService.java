@@ -39,6 +39,7 @@ public class NotifierService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             String orderString = objectMapper.writeValueAsString(order);
+            log.info("[POSTGRES] sending message to " + orderString + " `order_update` topic");
             tpl.execute("NOTIFY " + ORDERS_CHANNEL + ", '" + orderString + "'");
 //            customMetricsService.increaseNotifyCounter();
         } catch (JsonProcessingException e) {

@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public class KafkaConsumerConfig {
 
-    @Value("${bootstrap.servers}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
     private final String groupId = "foo";

@@ -14,12 +14,11 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-@EnableKafka
 @Configuration
 @Slf4j
 public class KafkaConsumerConfig {
 
-    @Value("${bootstrap.servers}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
     private final String groupId = "foo";

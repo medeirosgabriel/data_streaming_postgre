@@ -3,23 +3,35 @@ package com.medeirosgabriel.job.kafka;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.medeirosgabriel.job.model.Order_;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class SendMessageService {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
-    public SendMessageService(final KafkaTemplate<String, String> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
+    public SendMessageService() {
+
     }
 
     public void sendOrderUpdate(Order_ order) {
         try {
-            this.kafkaTemplate.send("order_update", new ObjectMapper().writeValueAsString(order));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            String message = new ObjectMapper().writeValueAsString(order);
+            var completableFuture = this.kafkaTemplate.send("order_update", message);
+            completableFuture.whenComplete((result, ex) -> {
+                if (ex == null) {
+                    log.info("[KAFKA] Sending message to " + message + " `order_update` topic");
+                } else {
+                    ex.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            log.error("Some error has occurred: " + e.getMessage());
         }
     }
 }
