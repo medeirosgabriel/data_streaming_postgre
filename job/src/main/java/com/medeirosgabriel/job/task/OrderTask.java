@@ -8,6 +8,7 @@ import com.medeirosgabriel.job.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,13 +19,16 @@ import java.util.List;
 public class OrderTask {
 
     @Autowired
-    NotifierService notifierService;
+    NotifierService postgresNotifierService;
 
     @Autowired
     private OrderRepository orderRepository;
 
     @Autowired
-    private SendMessageService sendMessageService;
+    private SendMessageService kafkaSendMessageService;
+
+    @Value("${environment.broker}")
+    private String broker;
 
     private final Logger log = LoggerFactory.getLogger(OrderTask.class);
 
@@ -43,9 +47,11 @@ public class OrderTask {
             order.setOrderStatus(OrderStatus.COMPLETED);
             this.orderRepository.save(order);
 
-            notifierService.notifyOrderCreated(order);
-
-            sendMessageService.sendOrderUpdate(order);
+            if (broker.equals("KAFKA")) {
+                kafkaSendMessageService.sendOrderUpdate(order);
+            } else if (broker.equals("POSTGRES")) {
+                postgresNotifierService.notifyOrderCreated(order);
+            }
         }
     }
 

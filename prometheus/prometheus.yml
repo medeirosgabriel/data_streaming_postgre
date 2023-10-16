@@ -20,8 +20,14 @@ scrape_configs:
     static_configs:
       - targets: ['cadvisor:9091']
 
-  - job_name: 'backend'
+  - job_name: 'batch-job'
     scrape_interval: 5s
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: ['app:8080']
+      - targets: ['job:8080']
+
+  - job_name: 'consumer-app'
+    scrape_interval: 5s
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [ 'app:8080' ]

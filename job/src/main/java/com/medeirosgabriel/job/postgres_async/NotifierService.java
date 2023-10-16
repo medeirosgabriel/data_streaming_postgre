@@ -17,7 +17,6 @@ import java.sql.Connection;
 import java.util.function.Consumer;
 
 @Slf4j
-@Component
 public class NotifierService {
     public static final String ORDERS_CHANNEL = "orders";
     private final JdbcTemplate tpl;

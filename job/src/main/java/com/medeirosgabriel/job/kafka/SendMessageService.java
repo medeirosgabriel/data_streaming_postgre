@@ -2,7 +2,9 @@ package com.medeirosgabriel.job.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.medeirosgabriel.job.micrometer.CustomMetricsService;
 import com.medeirosgabriel.job.model.Order_;
+import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -18,7 +20,11 @@ public class SendMessageService {
     public SendMessageService() {
 
     }
-
+    @Timed(
+            value = CustomMetricsService.NOTIFY_ORDER_UPDATE,
+            description = "Time taken to notify a change from an order update",
+            extraTags = {"broker","kafka"}
+    )
     public void sendOrderUpdate(Order_ order) {
         try {
             String message = new ObjectMapper().writeValueAsString(order);

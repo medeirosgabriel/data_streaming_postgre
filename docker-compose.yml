@@ -42,11 +42,12 @@ services:
       - postgres
     environment:
       DB_HOST: postgres
-      DB_PORT: 5433
+      DB_PORT: 5432
       DB_NAME: dockerdb
       DB_USERNAME: dockeruser
       DB_PASSWORD: dockerpassword
       KAFKA_HOST: kafka:9092
+      BROKER: KAFKA
     deploy:
       mode: replicated
       replicas: 1
