@@ -1,10 +1,12 @@
 package com.medeirosgabriel.job.task;
 
+import com.medeirosgabriel.job.SendMessageService;
 import com.medeirosgabriel.job.enums.OrderStatus;
-import com.medeirosgabriel.job.kafka.SendMessageService;
+import com.medeirosgabriel.job.kafka.SendMessageServiceKafka;
 import com.medeirosgabriel.job.postgres_async.NotifierService;
 import com.medeirosgabriel.job.model.Order_;
 import com.medeirosgabriel.job.repository.OrderRepository;
+import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +20,11 @@ import java.util.List;
 @Component
 public class OrderTask {
 
-    @Autowired
-    NotifierService postgresNotifierService;
-
-    @Autowired
+    @Autowired(required = false)
     private OrderRepository orderRepository;
 
     @Autowired
-    private SendMessageService kafkaSendMessageService;
+    private SendMessageService<Order_> orderSendMessageService;
 
     @Value("${environment.broker}")
     private String broker;
@@ -47,11 +46,7 @@ public class OrderTask {
             order.setOrderStatus(OrderStatus.COMPLETED);
             this.orderRepository.save(order);
 
-            if (broker.equals("KAFKA")) {
-                kafkaSendMessageService.sendOrderUpdate(order);
-            } else if (broker.equals("POSTGRES")) {
-                postgresNotifierService.notifyOrderCreated(order);
-            }
+            orderSendMessageService.sendMessage(order);
         }
     }
 

@@ -18,8 +18,9 @@ import java.util.function.Consumer;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@Timed
 public class NotificationHandler implements Consumer<PGNotification> {
+
+    public static final String ORDERS_CHANNEL = "orders";
 
     private final OrderRepository orderRepository;
 
@@ -34,7 +35,7 @@ public class NotificationHandler implements Consumer<PGNotification> {
     )
     public void accept(PGNotification t) {
         log.info("Notification received: pid={}, name={}, param={}",t.getPID(),t.getName(),t.getParameter());
-        if (t.getName().equals(NotifierService.ORDERS_CHANNEL)) {
+        if (t.getName().equals(ORDERS_CHANNEL)) {
             try {
                 Order_ order = new ObjectMapper().readValue(t.getParameter(), Order_.class);
                 Optional<Order_> optionalOrder = orderRepository.findById(order.getId());
