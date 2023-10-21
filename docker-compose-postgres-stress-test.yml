@@ -89,5 +89,13 @@ services:
     networks:
       - monitor-net
 
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - monitor-net
+
 volumes:
   postgres-data:
