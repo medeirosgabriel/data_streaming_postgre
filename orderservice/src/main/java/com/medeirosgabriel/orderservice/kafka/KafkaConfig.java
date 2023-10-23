@@ -26,14 +26,23 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+
     @Bean
+    @ConditionalOnProperty(value = "spring.profiles.active", havingValue = "KAFKA")
     public KafkaAdmin kafkaAdmin() {
-        Map<String, Object> configs = new HashMap<>();
-        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        return new KafkaAdmin(configs);
+        if (activeProfile.equals("KAFKA")) {
+            Map<String, Object> configs = new HashMap<>();
+            configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+            return new KafkaAdmin(configs);
+        } else {
+            return null;
+        }
     }
 
     @Bean
+    @ConditionalOnProperty(value = "spring.profiles.active", havingValue = "KAFKA")
     public NewTopic topic1() {
         return new NewTopic("order_update", 1, (short) 1);
     }

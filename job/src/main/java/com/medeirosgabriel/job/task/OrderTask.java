@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Component
 public class OrderTask {
 
     @Autowired(required = false)

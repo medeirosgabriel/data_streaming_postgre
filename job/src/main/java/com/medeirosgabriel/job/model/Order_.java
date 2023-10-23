@@ -15,4 +15,7 @@ public class Order_ {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private OrderStatus orderStatus;
+    public Order_(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }

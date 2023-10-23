@@ -38,7 +38,7 @@ services:
   job:
     build: ./job
     ports:
-      - "8085-9000:80"
+      - "8085-9000:8080"
     depends_on:
       - postgres
     environment:
@@ -49,6 +49,7 @@ services:
       DB_PASSWORD: dockerpassword
       KAFKA_HOST: kafka:9092
       BROKER: KAFKA
+      IS_BATCH: false
     deploy:
       mode: replicated
       replicas: 1
